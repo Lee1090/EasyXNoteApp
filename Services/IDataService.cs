@@ -8,5 +8,7 @@ namespace EasyXNoteApp.Services
         // IEnumerable<string> GetUser();
         string GetUsers();
         string GetUserProfiles();
+        string GetNoteBooks();
+        string GetNotes();
     }
 }

@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewBag.Title = "NoteBookList";
+}
+<style>
+    main {
+        margin-top: 20px; /* 设置 main 元素顶部的外边距 */
+    }
+
+    h2 {
+        font-size: 1.2em;
+        margin-bottom: 10px; /* 设置标题底部的外边距 */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<main aria-labelledby="title">
+    <h2 id="title"  style="font-size: 1.2em;">@ViewBag.Title</h2>
+    <!--<h3>@ViewBag.Message</h3>-->
+    @if (Model != null)
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>NoteBookID</th>
+                    <th>User ID</th>
+                    <th>NoteBookName</th>
+                    <th>IsDefault</th>
+                    <th>SortOrder</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var noteBook in Model)
+                {
+                    <tr>
+                        <td>@noteBook.NoteBookID</td>
+                        <td>@noteBook.UserID</td>
+                        <td>@noteBook.NoteBookName</td>
+                        <td>@noteBook.IsDefault</td>
+                        <td>@noteBook.SortOrder</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No user data available.</p>
+        <h3>@ViewBag.ErrorMessage</h3>
+    }
+</main>

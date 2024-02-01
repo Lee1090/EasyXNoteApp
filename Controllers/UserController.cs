@@ -33,9 +33,9 @@ namespace EasyXNoteApp.Controllers
             var apiResponse = _jsonParsingService.ParseApiResponse<List<User>>(userData);
             if(apiResponse.Success == true)
             {
-                List<User> users = apiResponse.Data;
+                List<User> reData = apiResponse.Data;
                 // ViewBag.test = users[0].UserName;
-                return View(users); // 将用户数据传递给视图
+                return View(reData); // 将用户数据传递给视图
             }
             else
             {

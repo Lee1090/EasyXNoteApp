@@ -1,10 +1,10 @@
-﻿using EasyXNoteApp.Models;
-using EasyXNoteApp.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using EasyXNoteApp.Models;
+using EasyXNoteApp.Services;
 
 namespace EasyXNoteApp.Controllers
 {
@@ -33,9 +33,9 @@ namespace EasyXNoteApp.Controllers
             var apiResponse = _jsonParsingService.ParseApiResponse<List<UserProfile>>(userData);
             if (apiResponse.Success == true)
             {
-                List<UserProfile> users = apiResponse.Data;
+                List<UserProfile> reData = apiResponse.Data;
                 // ViewBag.test = users[0].UserName;
-                return View(users); // 将用户数据传递给视图
+                return View(reData); // 将用户数据传递给视图
             }
             else
             {
