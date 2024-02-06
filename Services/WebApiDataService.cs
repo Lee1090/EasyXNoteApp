@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Configuration;
 using EasyXNoteApp.Models;
+using EasyXNoteApp.Services;
 
 namespace EasyXNoteApp.Services
 {
-    public class WebApiDataService : IDataService
+    public class WebApiDataService : IDataService, IDisposable
     {
         private readonly WebApiHttpClient _webApiHttpClient;
 
@@ -14,11 +15,15 @@ namespace EasyXNoteApp.Services
             string baseUrl = ConfigurationManager.AppSettings["DataAccessApiBaseUrl"];
             _webApiHttpClient = new WebApiHttpClient(baseUrl);
         }
-
         public string GetUsers()
         {
             var data = _webApiHttpClient.Get("api/user");
             return data;
+        }
+        public string InsertUser(string jsonData)
+        {
+            string response = _webApiHttpClient.Insert("api/user", jsonData);
+            return response;
         }
         public string GetUserProfiles()
         {
@@ -36,5 +41,11 @@ namespace EasyXNoteApp.Services
             var data = _webApiHttpClient.Get("api/note");
             return data;
         }
+        public void Dispose()
+        {
+            _webApiHttpClient.Dispose();
+        }
+        
     }
 }
+

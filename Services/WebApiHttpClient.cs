@@ -1,8 +1,75 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EasyXNoteApp.Services
+{
+    public class WebApiHttpClient : IDisposable
+    {
+        private readonly string _baseUrl;
+        private readonly HttpClient _httpClient;
+
+        public WebApiHttpClient(string baseUrl)
+        {
+            _baseUrl = baseUrl;
+            _httpClient = new HttpClient();
+        }
+
+        public string Get(string endpoint)
+        {
+            string apiUrl = $"{_baseUrl}/{endpoint}";
+
+            // Start synchronous GET request
+            HttpResponseMessage response = _httpClient.GetAsync(apiUrl).Result;
+
+            // Ensure request success
+            response.EnsureSuccessStatusCode();
+
+            // Read response content and return
+            return response.Content.ReadAsStringAsync().Result;
+        }
+
+        public async Task<string> GetAsync(string endpoint)
+        {
+            string apiUrl = $"{_baseUrl}/{endpoint}";
+
+            // Start asynchronous GET request
+            HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);
+
+            // Ensure request success
+            response.EnsureSuccessStatusCode();
+
+            // Read response content and return
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public string Insert(string endpoint, string jsonData)
+        {
+            string apiUrl = $"{_baseUrl}/{endpoint}";
+
+            // Create a StringContent object from JSON data
+            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+
+            // Start synchronous POST request to insert data
+            // need to try catch
+            HttpResponseMessage response = _httpClient.PostAsync(apiUrl, content).Result;
+            response.EnsureSuccessStatusCode();
+
+            // Read response content and return
+            return response.Content.ReadAsStringAsync().Result;
+        }
+        public void Dispose()
+        {
+            _httpClient.Dispose();
+        }
+    }
+}
+
+/*
+using System;
 using System.Net;
-using System.Web;
+using System.Net.Http;
 
 namespace EasyXNoteApp.Services
 {
@@ -19,11 +86,23 @@ namespace EasyXNoteApp.Services
         {
             using (var client = new WebClient())
             {
+                // 
                 return client.DownloadString($"{_baseUrl}/{endpoint}");
+            }
+        }
+        public string Insert(string endpoint, string jsonData)
+        {
+            using (var client = new WebClient())
+            {
+                client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                return client.UploadString($"{_baseUrl}/{endpoint}", "POST", jsonData);
             }
         }
     }
 }
+*/
+
+
 /*
 {
     "success": true,

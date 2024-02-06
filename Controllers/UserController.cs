@@ -1,5 +1,6 @@
 ﻿using EasyXNoteApp.Models;
 using EasyXNoteApp.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,59 @@ namespace EasyXNoteApp.Controllers
                 ViewBag.ErrorMessage = apiResponse.ErrorMessage;
                 return View(); // 如果发生错误，仍然返回视图，但没有用户数据
             }
+        }
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+            private string GenerateSalt()
+        {
+            // Generate a random salt using a secure random number generator
+            byte[] saltBytes = new byte[16];
+            using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(saltBytes);
+            }
+
+            // Convert the byte array to a base64-encoded string for storage
+            return Convert.ToBase64String(saltBytes);
+        }
+        private string HashPassword(string password, string salt)
+        {
+            // Combine the password and salt, then hash the result
+            string combinedPassword = password + salt;
+
+            // Add password hashing logic here (e.g., using a library like BCrypt)
+            // Example using BCrypt: return BCrypt.Net.BCrypt.HashPassword(combinedPassword);
+            return combinedPassword; // Placeholder, replace with actual hashing logic
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                // Generate a random salt for this user
+                user.PasswordSalt = GenerateSalt();
+
+                // Hash the password with the generated salt before saving to the database
+                user.PasswordHash = HashPassword(user.Password, user.PasswordSalt);
+
+                // Additional logic can be added here
+                user.CreatedDate = DateTime.Now;
+
+                string jsonData = JsonConvert.SerializeObject(user);
+
+                string reStr = _dataService.InsertUser(jsonData);
+
+                // Need to handle return string
+
+                return RedirectToAction("Index"); // Redirect to Home
+            }
+
+            return View(user);
         }
     }
 }
