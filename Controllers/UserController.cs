@@ -97,6 +97,12 @@ namespace EasyXNoteApp.Controllers
 
             return View(user);
         }
+
+        public ActionResult Login()
+        {
+            return View();
+        }
+
     }
 }
 /*
