@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +31,30 @@ namespace EasyXNoteApp.Services
             // Read response content and return
             return response.Content.ReadAsStringAsync().Result;
         }
+
+        public HttpResponseMessage Get(string endpoint, string userName, string password)
+        {
+            string apiUrl = $"{_baseUrl}/{endpoint}";
+
+            // 创建一个凭据对象，用于包含用户名和密码
+            var credentials = new NetworkCredential(userName, password);
+
+            // 创建一个 HTTP 请求消息对象
+            var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+
+            // 将凭据添加到请求标头中
+            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{credentials.UserName}:{credentials.Password}")));
+
+            // 发送 HTTP 请求并获取响应
+            HttpResponseMessage response = _httpClient.SendAsync(request).Result;
+
+            // 此处不处理返回状态，直接提交
+            // response.EnsureSuccessStatusCode();
+
+            // 读取响应内容并返回
+            return response;
+        }
+
 
         public async Task<string> GetAsync(string endpoint)
         {

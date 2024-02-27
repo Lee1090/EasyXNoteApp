@@ -6,17 +6,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace EasyXNoteApp.Controllers
 {
     public class UserController : Controller
     {
         private readonly IDataService _dataService;
+        private readonly IIdentityValidator _identityValidator;
         private readonly JsonParsingService _jsonParsingService;
+
 
         public UserController()
         {
             _dataService = new WebApiDataService();
+            _identityValidator = new WebApiIdentityValidator();
             _jsonParsingService = new JsonParsingService();
         }
 
@@ -103,6 +107,29 @@ namespace EasyXNoteApp.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                if (_identityValidator.IsValidUser(user.UserName, user.Password))
+                {
+                    // Set user identity cookie
+                    FormsAuthentication.SetAuthCookie(user.UserName, false);
+
+                    // Need to add signature verification method
+
+                    return RedirectToAction("Index", "Home"); // Redirect to the homepage
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Validation failed: UserName or Password is incorrect, or the service is unavailable.");
+                }
+            }
+
+            return View(user); // Display login error message
+        }
     }
 }
 /*

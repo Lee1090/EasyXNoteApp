@@ -133,6 +133,8 @@
     <Compile Include="Models\UserProfile.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Services\IDataService.cs" />
+    <Compile Include="Services\IIdentityValidator.cs" />
+    <Compile Include="Services\WebApiIdentityValidator.cs" />
     <Compile Include="Services\JsonParsingService.cs" />
     <Compile Include="Services\WebApiDataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

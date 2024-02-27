@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using EasyXNoteApp.Models;
 using EasyXNoteApp.Services;
 
 namespace EasyXNoteApp.Services
