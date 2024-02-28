@@ -92,15 +92,23 @@ namespace EasyXNoteApp.Controllers
 
                 string jsonData = JsonConvert.SerializeObject(user);
 
-                string reStr = _dataService.InsertUser(jsonData);
+                OperationResult opRe = _dataService.InsertUser(jsonData);
 
-                // Need to handle return string
-
-                return RedirectToAction("Index"); // Redirect to Home
+                if (opRe.success)
+                {
+                    ViewBag.Message = "User created successfully.";
+                    return View(user);
+                }
+                else
+                {
+                    ViewBag.Message = "Failed to create user: " + opRe.message;
+                    return View(user);
+                }
             }
 
             return View(user);
         }
+
 
         public ActionResult Login()
         {

@@ -34,25 +34,37 @@ namespace EasyXNoteApp.Services
 
         public HttpResponseMessage Get(string endpoint, string userName, string password)
         {
-            string apiUrl = $"{_baseUrl}/{endpoint}";
+            try
+            {
+                string apiUrl = $"{_baseUrl}/{endpoint}";
 
-            // 创建一个凭据对象，用于包含用户名和密码
-            var credentials = new NetworkCredential(userName, password);
+                // 创建一个凭据对象，用于包含用户名和密码 Create a credential object to hold the username and password
+                var credentials = new NetworkCredential(userName, password);
 
-            // 创建一个 HTTP 请求消息对象
-            var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+                // 创建一个 HTTP 请求消息对象 Create an HTTP request message object
+                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
 
-            // 将凭据添加到请求标头中
-            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{credentials.UserName}:{credentials.Password}")));
+                // 将凭据添加到请求标头中 Add the credentials to the request header
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{credentials.UserName}:{credentials.Password}")));
 
-            // 发送 HTTP 请求并获取响应
-            HttpResponseMessage response = _httpClient.SendAsync(request).Result;
+                // 发送 HTTP 请求并获取响应 Send the HTTP request and retrieve the response
+                HttpResponseMessage response = _httpClient.SendAsync(request).Result;
 
-            // 此处不处理返回状态，直接提交
-            // response.EnsureSuccessStatusCode();
+                // 此处不处理返回状态，直接提交 Submit without handling the return status here
+                // response.EnsureSuccessStatusCode();
 
-            // 读取响应内容并返回
-            return response;
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                // 处理 HTTP 请求异常，记录日志 Handling HTTP request exception, logging
+                throw new Exception("HTTP request exception", ex);
+            }
+            catch (Exception ex)
+            {
+                // 处理其他异常，记录日志 Handling other exceptions, logging
+                throw new Exception("Unknown exception occurred", ex);
+            }
         }
 
 
@@ -70,21 +82,41 @@ namespace EasyXNoteApp.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        public string Insert(string endpoint, string jsonData)
+        public HttpResponseMessage Insert(string endpoint, string jsonData)
         {
-            string apiUrl = $"{_baseUrl}/{endpoint}";
+            try
+            {
+                string apiUrl = $"{_baseUrl}/{endpoint}";
 
-            // Create a StringContent object from JSON data
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                // Create a StringContent object from JSON data
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-            // Start synchronous POST request to insert data
-            // need to try catch
-            HttpResponseMessage response = _httpClient.PostAsync(apiUrl, content).Result;
-            response.EnsureSuccessStatusCode();
+                // Start synchronous POST request to insert data
+                HttpResponseMessage response = _httpClient.PostAsync(apiUrl, content).Result;
 
-            // Read response content and return
-            return response.Content.ReadAsStringAsync().Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    // 处理错误状态码，例如抛出异常或者记录日志
+                    // 这里仅仅是简单地将响应返回，具体处理方式根据需求而定
+                    return response;
+                }
+
+                // 如果需要，可以在这里对响应进行进一步处理，比如将响应内容反序列化为对象
+
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                // 处理 HTTP 请求异常，例如抛出异常或者记录日志 Handling HTTP request exception, logging
+                throw new Exception("HTTP request exception", ex);
+            }
+            catch (Exception ex)
+            {
+                // 处理其他异常，例如抛出异常或者记录日志 Handling other exceptions, logging
+                throw new Exception("Unknown exception occurred", ex);
+            }
         }
+
         public void Dispose()
         {
             _httpClient.Dispose();

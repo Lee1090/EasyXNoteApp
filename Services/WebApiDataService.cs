@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using EasyXNoteApp.Services;
+using System.Net.Http;
+using EasyXNoteApp.Models;
+using System.Net;
 
 namespace EasyXNoteApp.Services
 {
@@ -18,11 +21,31 @@ namespace EasyXNoteApp.Services
             var data = _webApiHttpClient.Get("api/user");
             return data;
         }
-        public string InsertUser(string jsonData)
+        public OperationResult InsertUser(string jsonData)
         {
-            string response = _webApiHttpClient.Insert("api/user", jsonData);
-            return response;
+            try
+            {
+                HttpResponseMessage response = _webApiHttpClient.Insert("api/user", jsonData);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return new OperationResult(true, response.Content.ReadAsStringAsync().Result);
+                }
+                else
+                {
+                    return new OperationResult(false, response.Content.ReadAsStringAsync().Result);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                return new OperationResult(false, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult(false, ex.Message);
+            }
         }
+
         public string GetUserProfiles()
         {
             var data = _webApiHttpClient.Get("api/userProfile");
